@@ -48,11 +48,19 @@ with resizer:
             gray = cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY)
             st.image(gray, caption="Grayscale Image", use_column_width=True)
         
+        kernel_size = st.slider("Select Blur Kernel Size:", min_value=1, max_value=50, value=15, step=2)
         if st.button("Apply Blur"):
-            blur = cv2.GaussianBlur(resized_img, (15, 15), 0)
+            if kernel_size % 2 == 0:  # Ensure kernel size is odd
+                kernel_size += 1
+            blur = cv2.GaussianBlur(resized_img, (kernel_size, kernel_size), 0)
             st.image(blur, channels="BGR", caption="Blur Image", use_column_width=True)
-        
+
+        st.write("Adjust Canny Edge Detection Parameters:")
+        upper_thresh = st.slider("Upper Threshold:", min_value=0, max_value=255, value=150)
+        lower_thresh = st.slider("Lower Threshold:", min_value=0, max_value=255, value=50)
+
         if st.button("Apply Edge Detection"):
-            gray = cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY)
-            edges = cv2.Canny(gray, 50, 150)
+            if 'gray' not in locals():
+                gray = cv2.cvtColor(resized_img, cv2.COLOR_BGR2GRAY)
+            edges = cv2.Canny(gray, lower_thresh, upper_thresh)
             st.image(edges, caption="Edge Detection Image", use_column_width=True)
